@@ -17,6 +17,8 @@ class VistaJugador {
     }
 }
 
+var vista = VistaJugador(0,0);
+
 function DrawView2d(view2d) {
     
     ctx = view2d.getContext("2d");
@@ -46,6 +48,6 @@ function mouse_position()
 
 function on_mouse_moved(position)
 {
-
-
+	vista.x = position.x;
+	vista.y = position.y;
 }
