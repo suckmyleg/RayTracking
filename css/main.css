@@ -3,19 +3,11 @@ body{
 }
 #View2d{
     border: 2px solid #FFF;
-    position: absolute;
-    margin :auto;
-    top:0;
-    right:0;
-    left:0;
-    bottom:0;
+    height: 400px;
+    width: 1000px;
 }
 #View3d{
     border: 2px solid #FFF;
-    position: absolute;
-    margin :auto;
-    top:0;
-    right:0;
-    left:0;
-    bottom:0;
+    height: 100%;
+    width: 600px;
 }
