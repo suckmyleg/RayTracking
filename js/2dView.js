@@ -47,7 +47,7 @@ class Part{
 
 
 class FisicObject{
-	constructor(position, size, parts){
+	constructor(position = new Point(0,0), size = new Point(0,0), parts = []){
 		this.position = position;
 		this.size = size;
 
@@ -187,18 +187,19 @@ class Player{
 
 class Vision{
 	constructor(position, angle, pov=90){
-		this.object = new FisicObject();
-		this.position = position;
 		this.pov = pov;
 		this.angle = angle;
+
+		this.object = new FisicObject(position,new Point(0,0), [
+		new Line(position, new Point(position.get().x + 10, position.get().y+10))]);
 	}
 
 	move_to(position){
-		this.position = position;
+		this.object.move_to(position);
 	}
 
 	get_position(){
-		return this.position.get();
+		return this.object.position.get();
 	}
 }
 
