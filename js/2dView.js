@@ -187,7 +187,7 @@ class Player{
 
 class Vision{
 	constructor(position, angle, pov=90){
-		this.object = FisicObject();
+		this.object = new FisicObject();
 		this.position = position;
 		this.pov = pov;
 		this.angle = angle;
@@ -312,6 +312,7 @@ class Screen{
 
 
 
+// SETUP AND ALL THAT STUFF
 
 let d = new Date();
 
@@ -344,11 +345,6 @@ function tick_fps()
 function on_load2d()
 {
 	setup_main("View2d", 0, 150);
-}
-
-onmousemove = function mouse_position_2d(event)
-{
-	player.move_to_without_point(event.clientX-17.5, event.clientY-17.5);
 }
 
 function setup_main(id="View2d", ms=20, target_fps=false)
@@ -387,3 +383,22 @@ function run_2d()
 	console.log("Runned", fps, seconds);
 }
 
+
+
+
+// KEY MAPING AND STUFF LIKE THAT
+
+var holding = false;
+
+function holding_false(){
+    holding = false;
+}
+
+function holding_true(){
+    holding = true;
+}
+
+onmousemove = function mouse_position_2d(event)
+{
+    if (holding) player.move_to_without_point(event.clientX-17.5, event.clientY-17.5);
+}
