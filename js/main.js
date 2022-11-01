@@ -36,6 +36,17 @@ class Esquina {
     }
 }
 
+class Screen {
+    constructor(ScreenTop, ScreenBot){
+        this.ScreenTop = ScreenTop;
+        this.ScreenBot = ScreenBot;
+    }
+
+    draw(ctx, color = "green"){
+        drawLine(ctx, this.ScreenBot, this.ScreenTop, color);
+    }
+}
+
 class VistaJugador {
     constructor(x, y, angulo){
         this.x = x;
@@ -44,7 +55,7 @@ class VistaJugador {
         this.calcularCono();
         var ScreenTop = this.calcularScreenTop();
         var ScreenBot = this.calcularScreenBot();
-        this.Screen = new Recta (ScreenTop, ScreenBot);
+        this.Screen = new Screen (ScreenTop, ScreenBot);
     }
 
     point (){
