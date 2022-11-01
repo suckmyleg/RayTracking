@@ -187,18 +187,11 @@ function key_pressed()
 
 onmousemove = function (event)
 {
-    Vista.change_x_y(event.clientX, event.clientY)
-
-    //console.log(event.clientX, event.clientY);
-}
-
-function on_mouse_moved(position)
-{
+    Vista.change_x_y(event.clientX-8, event.clientY-9)
 }
 
 function on_load()
 {
-
     var view2d = document.getElementById('View2d');
     main(view2d);
 }
@@ -207,5 +200,5 @@ function main(view2d)
 {
     DrawView2d(view2d);
 
-    var t = setTimeout(function() {main(view2d);}, 100);
+    var t = setTimeout(function() {main(view2d);}, 10);
 }
