@@ -1,3 +1,17 @@
+function get_parts_cubo(p, s){
+	parts = []
+	
+	parts.push(new Line({x: p.x, y: p.y}, {x: p.x+s.w, y: p.y}));
+	parts.push(new Line({x: p.x+s.w, y: p.y}, {x: p.x+s.w, y: p.y+s.h}));
+
+	parts.push(new Line({x: p.x, y: p.y+s.h}, {x: p.x+s.w, y: p.y+s.h}));
+	parts.push(new Line({x: p.x, y: p.y}, {x: p.x, y: p.y+s.h}));
+
+	return parts
+}
+
+
+
 class Point{
 	constructor(x, y){
 		this.x = x;
@@ -20,27 +34,132 @@ class Line{
 	}
 }
 
+class Part{
+	constructor(a, b){
+		this.line = new Line(a, b);
+	}
+
+	get_line(){
+		return this.line;
+	}
+}
 
 
+
+class FisicObject{
+	constructor(position, size, parts){
+		this.position = position;
+		this.size = size;
+
+		this.parts = parts;
+	}
+
+
+
+	get_parts(){
+		return this.parts;
+	}
+
+	get_position(){
+		return this.position;
+	}
+
+	move_to(position){
+		this.position = position;
+	}
+
+	get_size(){
+		return this.size;
+	}
+}
+
+
+
+
+class Cubo{
+	constructor(position, size){
+		parts = get_parts_cubo(position, size);
+
+		this.fisicObject = new FisicObject(position, size, parts);
+	}
+
+	get_object(){
+		return this.fisicObject;
+	}
+}
+
+class Wall{
+	constructor(position, size){
+		this.fisicObject = new FisicObject(position, [
+			new Line({x: position.x, y: position.y}, 
+				{x: position.x+size.w, y: position.y+size.h})])
+
+	}
+
+	get_object(){
+		return this.fisicObject;
+	}
+}
+
+
+
+
+class Entity{
+	constructor(position, size, type="cubo"){
+		if (type == "cubo"){
+			this.entity = new Cubo(position, size);
+		} else if (type == "wall"){
+			this.entity = new Wall(position, size);
+		}
+		else{
+			this.entity = new Cubo(position, size);
+		}
+
+		this.vision = new Vision(position);
+	}
+
+	get_vision(){
+		return this.vision;
+	}
+
+	get_entity(){
+		return this.entity;
+	}
+
+	move_to(position){
+		this.vision.move_to(position);
+		this.entity.get_object().move_to(position);
+	}
+
+	get_position(){
+		return this.entity.get_object().get_position();
+	}
+
+	get_size(){
+		return this.entity.get_object().get_size();
+	}
+}
 
 
 
 class Player{
 	constructor(x=0, y=0, w=0, h=0, color="black"){
-		this.position = new Point(x, y);
-		this.size = new Point(w, h);
+		this.entity = new Entity(new Point(x, y), new Point(w, h));
 		this.color = color;
-		this.vision = new Vision(this.position);
+	}
+
+	get_object(){
+		return this.entity;
 	}
 
 	get_position()
 	{
-		return this.position.get();
+		return this.entity.get_position();
 	}
 
 	get_size()
 	{
-		return this.size.get();
+		return this.entity.get_size();
 	}
 
 	get_color(){
@@ -48,8 +167,7 @@ class Player{
 	}
 
 	move_to(point){
-		this.position = point;
-		this.vision.move_to(point);
+		this.entity.move_to(point);
 	}
 
 	move_to_without_point(x, y){
@@ -57,7 +175,7 @@ class Player{
 	}
 
 	get_vision(){
-		return this.vision;
+		return this.entity.get_vision();
 	}
 }
 
@@ -83,8 +201,13 @@ class Vision{
 
 
 
-
-
+// Player.Entity.Object.FisicalObject.position
+// Player.Entity.Object.FisicalObject.size
+// 
+// Player.Entity.vision
+// 
+//  
+// 
 
 
 
@@ -104,7 +227,7 @@ class Screen{
 	}
 
 	drawPlayer(player){
-		this.drawRect(player.get_position(), player.get_size(), player.get_color());
+		this.drawRect(player.get_position().get(), player.get_size().get(), player.get_color());
 	}
 
 	drawLine(begin, end, stroke = 'black', width = 1){
@@ -209,7 +332,7 @@ function tick_fps()
 
 function on_load2d()
 {
-	setup_main("View2d", 0, 60);
+	setup_main("View2d", 0, 150);
 }
 
 onmousemove = function mouse_position_2d(event)
@@ -250,6 +373,6 @@ function run_2d()
 
 	tick_fps();
 
-	console.log("Runned", fps);
+	console.log("Runned", fps, seconds);
 }
 

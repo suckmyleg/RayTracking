@@ -182,7 +182,7 @@ function calcularComponenteRecta(puntoA, m){
 
 function key_pressed()
 {
-
+    
 }
 
 onmousemove = function (event)
