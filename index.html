@@ -11,7 +11,7 @@
     <script src="js/3dView.js"></script>
 </head>
 <body onload="on_load();">
-    <canvas id="View2d" width="1000" height="400" onkeypress="key_pressed();"></canvas>
+    <canvas onmouseup="holding_false();" onmousedown="holding_true();" id="View2d" width="1000" height="400" onkeypress="key_pressed();"></canvas>
     <canvas id="View3d" width="600" height="400"></canvas>
 </body>
 </html>

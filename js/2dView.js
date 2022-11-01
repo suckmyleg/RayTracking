@@ -105,7 +105,7 @@ class Wall{
 
 
 class Entity{
-	constructor(position, size, type="cubo"){
+	constructor(position, size, type="cubo", color="black"){
 		if (type == "cubo"){
 			this.entity = new Cubo(position, size);
 		} else if (type == "wall"){
@@ -116,6 +116,11 @@ class Entity{
 		}
 
 		this.vision = new Vision(position);
+		this.color = color;
+	}
+
+	get_color(){
+		return this.color;
 	}
 
 	get_vision(){
@@ -182,6 +187,7 @@ class Player{
 
 class Vision{
 	constructor(position, angle, pov=90){
+		this.object = FisicObject();
 		this.position = position;
 		this.pov = pov;
 		this.angle = angle;
@@ -200,14 +206,19 @@ class Vision{
 
 
 
+// Player(x, y, w, h, color)
+
+// Player.Entity(position, size, type, color)
+
+// Player.Entity.vision(position, angle, pov)
+
+// Player.Entity.Object(position, size)
+
+// Player.Entity.Object.FisicalObject(position, size, parts)
 
 // Player.Entity.Object.FisicalObject.position
+
 // Player.Entity.Object.FisicalObject.size
-// 
-// Player.Entity.vision
-// 
-//  
-// 
 
 
 
@@ -226,8 +237,8 @@ class Screen{
 		this.objects = [];
 	}
 
-	drawPlayer(player){
-		this.drawRect(player.get_position().get(), player.get_size().get(), player.get_color());
+	drawEntity(entity){
+		this.drawRect(entity.get_position().get(), entity.get_size().get(), entity.get_color());
 	}
 
 	drawLine(begin, end, stroke = 'black', width = 1){
@@ -367,7 +378,7 @@ function run_2d()
 {
 	screen.empty();
 
-	screen.drawPlayer(player);
+	screen.drawEntity(player.entity);
 
 	screen.draw_vision(player.get_vision());
 

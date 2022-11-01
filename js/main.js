@@ -59,6 +59,12 @@ class VistaJugador {
         return {x: this.x, y: this.y};
     }
 
+    calcular(){
+        this.calcularCono()
+        this.calcularScreenTop()
+        this.calcularScreenBot()
+    }
+
     change_x_y(x, y)
     {
         this.x = x;
@@ -223,6 +229,7 @@ function ajustarAltura(punto, width, height){
 
 
 
+var holding = false;
 
 function key_pressed()
 {
@@ -231,7 +238,19 @@ function key_pressed()
 
 onmousemove = function (event)
 {
-    Vista.change_x_y(event.clientX-8, event.clientY-9)
+    if(holding)
+    {
+        Vista.change_x_y(event.clientX-8, event.clientY-9)
+        Vista.calcular()
+    }
+}
+
+function holding_true(){
+    holding = true;
+}
+
+function holding_false(){
+    holding = false;
 }
 
 function on_load()
@@ -245,5 +264,5 @@ function main(view2d, view3d)
 {
     DrawView2d(view2d, view3d);
 
-    //var t = setTimeout(function() {main(view2d);}, 10);
+    var t = setTimeout(function() {main(view2d, view3d);}, 10);
 }
