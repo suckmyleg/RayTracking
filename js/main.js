@@ -167,7 +167,6 @@ function DrawView2d(view2d, view3d) {
 }
 
 function DrawViewAerea(Pared){
-    console.log("hola")
 
     viewAerea = document.getElementById('ViewAerea');
     ctx = viewAerea.getContext("2d");
