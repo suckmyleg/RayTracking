@@ -51,6 +51,10 @@ class Screen {
         var y = Recta.m * x + Recta.b;
         return new Point(x, y);
     }
+
+    reload(ctx){
+        draw();
+    }
 }
 
 class VistaJugador {
@@ -72,6 +76,7 @@ class VistaJugador {
         this.calcularCono()
         this.calcularScreenTop()
         this.calcularScreenBot()
+        this.Screen.reload();
     }
 
     change_x_y(x, y)
