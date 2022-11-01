@@ -52,8 +52,10 @@ class Screen {
         return new Point(x, y);
     }
 
-    reload(ctx){
-        draw();
+    reload (ScreenTop, ScreenBot){
+        this.ScreenTop = ScreenTop;
+        this.ScreenBot = ScreenBot;
+        this.altura = this.ScreenBot.y-this.ScreenTop.y;
     }
 }
 
@@ -74,9 +76,9 @@ class VistaJugador {
 
     calcular(){
         this.calcularCono()
-        this.calcularScreenTop()
-        this.calcularScreenBot()
-        this.Screen.reload();
+        var ScreenTop = this.calcularScreenTop();
+        var ScreenBot = this.calcularScreenBot();
+        this.Screen.reload(ScreenTop, ScreenBot);
     }
 
     change_x_y(x, y)
@@ -99,7 +101,7 @@ class VistaJugador {
         var techo = new Point(x, y);
         this.RectaTecho = new Recta (techo, this.point());
         //punto suelo
-        var x = this.x + (175/tan);
+        var x = this.x + ((400-this.y)/tan);
         var y = 399;
         var suelo = new Point(x, y);
         this.RectaSuelo = new Recta (suelo, this.point());
