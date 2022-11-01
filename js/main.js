@@ -1,17 +1,3 @@
-function on_load()
-{
-    var view2d = document.getElementById('View2d');
-	var view3d = document.getElementById('View3d');
-
-	view3d.innerHTML = "Hail";
-
-
-    DrawView2d(view2d);
-}
-
-
-
-
 
 class Point {
     constructor(x, y){
@@ -66,6 +52,18 @@ class VistaJugador {
         return {x: this.x, y: this.y};
     }
 
+    change_x_y(x, y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
+    forward_x_y(x, y)
+    {
+        this.x += x;
+        this.y += y;
+    }
+
     calcularCono() {
         var tan = getTanFromDegrees(this.angulo/2);
         //punto techo
@@ -108,12 +106,7 @@ class VistaJugador {
 
 
 
-
-
 var Vista = new VistaJugador(5,225, 50);
-
-
-
 
 function DrawView2d(view2d) {
 
@@ -130,7 +123,7 @@ function DrawView2d(view2d) {
     drawLine(ctx, Esquina1.inicio, Esquina1.final);
     RectaJugadorEsquinaSuelo = new Recta (Esquina1.inicio);
     RectaJugadorEsquinaSuelo.draw(ctx);
-    console.log(Vista.Screen);
+    //console.log(Vista.Screen);
     Vista.Screen.draw(ctx, "green");
 }
 
@@ -192,19 +185,27 @@ function key_pressed()
 
 }
 
-function mouse_position()
+onmousemove = function (event)
 {
-    event = window.event;
+    Vista.change_x_y(event.clientX, event.clientY)
 
-    mouse_position = {"x":e.clientX, "y":e.clientY};
-
-    on_mouse_moved(mouse_position)
-
-    var t = setTimeout(mouse_position,100);
+    //console.log(event.clientX, event.clientY);
 }
 
 function on_mouse_moved(position)
 {
-    vista.x = position.x;
-    vista.y = position.y;
+}
+
+function on_load()
+{
+
+    var view2d = document.getElementById('View2d');
+    main(view2d);
+}
+
+function main(view2d)
+{
+    DrawView2d(view2d);
+
+    var t = setTimeout(function() {main(view2d);}, 100);
 }
