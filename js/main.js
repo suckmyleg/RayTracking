@@ -30,10 +30,17 @@ class Screen {
     constructor(ScreenTop, ScreenBot){
         this.ScreenTop = ScreenTop;
         this.ScreenBot = ScreenBot;
+        this.altura = this.ScreenBot.y-this.ScreenTop.y;
     }
 
     draw(ctx, color = "green"){
         drawLine(ctx, this.ScreenBot, this.ScreenTop, color);
+    }
+
+    calcularInterseccion(Recta){
+        var x = this.ScreenBot.x;
+        var y = Recta.m * x + Recta.b;
+        return {x: x, y: y};
     }
 }
 
@@ -108,7 +115,7 @@ class VistaJugador {
 
 var Vista = new VistaJugador(5,225, 50);
 
-function DrawView2d(view2d) {
+function DrawView2d(view2d, view3d) {
 
     ctx = view2d.getContext("2d");
     
@@ -121,10 +128,40 @@ function DrawView2d(view2d) {
     //crear y dibujar esquina
     Esquina1 = new Esquina(500,399,500,200);
     drawLine(ctx, Esquina1.inicio, Esquina1.final);
+    Vista.Screen.draw(ctx);
+
+    //dibujamos 
     RectaJugadorEsquinaSuelo = new Recta (Esquina1.inicio);
-    RectaJugadorEsquinaSuelo.draw(ctx);
-    //console.log(Vista.Screen);
-    Vista.Screen.draw(ctx, "green");
+    RectaJugadorEsquinaSuelo.draw(ctx, "blue");
+
+    RectaJugadorEsquinaTecho = new Recta (Esquina1.final);
+    RectaJugadorEsquinaTecho.draw(ctx, "blue");
+
+    //Calcular puntos de interseccion de la esquina con la pantalla
+    PuntoScreenEsquina1Suelo = Vista.Screen.calcularInterseccion(RectaJugadorEsquinaSuelo);
+    PuntoScreenEsquina1Techo = Vista.Screen.calcularInterseccion(RectaJugadorEsquinaTecho);
+
+    //dibujamos vista "3d"
+    DrawView3d(view3d, PuntoScreenEsquina1Suelo, PuntoScreenEsquina1Techo);
+
+}
+
+function DrawView3d(view3d, puntoA, puntoB){
+
+    ctx = view3d.getContext("2d");
+    
+    //dibujar fondo
+    drawRect(ctx, 0, 0, view3d.width, view3d.height, "green");
+
+    //ajustar puntos a la altura de la pantalla
+    puntoA = ajustarAltura(puntoA.y, view3d.width, view3d.height);
+    puntoB = ajustarAltura(puntoB.y, view3d.width, view3d.height);
+
+    //dibujar suelo hasta pared
+    origen = {x: view3d.width/2, y: 399};
+    drawLine(ctx, origen, puntoA, "grey",5);
+    drawLine(ctx, puntoA, puntoB, "black",5);
+
 }
 
 function getTanFromDegrees(degrees) {
@@ -163,6 +200,13 @@ function calcularComponenteRecta(puntoA, m){
     return res;
 }
 
+function ajustarAltura(punto, width, height){
+    res = {x:width/2, y:0};
+    punto -= Vista.Screen.ScreenTop.y;
+    res.y = (punto * height)/Vista.Screen.altura;
+    return res;
+}
+
 
 
 
@@ -193,12 +237,13 @@ onmousemove = function (event)
 function on_load()
 {
     var view2d = document.getElementById('View2d');
-    main(view2d);
+    var view3d = document.getElementById('View3d');
+    main(view2d, view3d);
 }
 
-function main(view2d)
+function main(view2d, view3d)
 {
-    DrawView2d(view2d);
+    DrawView2d(view2d, view3d);
 
-    var t = setTimeout(function() {main(view2d);}, 10);
+    //var t = setTimeout(function() {main(view2d);}, 10);
 }
