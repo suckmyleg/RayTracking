@@ -16,12 +16,23 @@ class Point {
     }
 }
 
+class Recta {
+    constructor(puntoA, puntoB = Vista.point()){
+        this.m = calcularPendienteRecta(puntoA, puntoB);
+        this.b = calcularComponenteRecta(puntoA, this.m);
+        this.puntoA = puntoA;
+        this.puntoB = puntoB;
+        //console.log(this);
+    }
+    draw (ctx, color = "black"){
+        drawLine(ctx, this.puntoA, this.puntoB, color);
+    }
+}
+
 class Esquina {
     constructor(xi, yi, xf, yf){
-        this.xi = xi;
-        this.yi = yi;
-        this.xf = xf;
-        this.yf = yf;
+        this.inicio = {x: xi, y: yi};
+        this.final = {x: xf, y: yf};
     }
 }
 
@@ -30,10 +41,45 @@ class VistaJugador {
         this.x = x;
         this.y = y;
         this.angulo = angulo;
+        this.calcularCono();
+        var ScreenTop = this.calcularScreenTop();
+        var ScreenBot = this.calcularScreenBot();
+        this.Screen = new Recta (ScreenTop, ScreenBot);
     }
 
     point (){
-        return {x: this.x, y: this.y}
+        return {x: this.x, y: this.y};
+    }
+
+    calcularCono() {
+        var tan = getTanFromDegrees(this.angulo/2);
+        //punto techo
+        var x = this.x + (this.y/tan);
+        var y = 0;
+        var techo = {x: x, y: y};
+        this.RectaTecho = new Recta (techo, this.point());
+        //punto suelo
+        var x = this.x + (175/tan);
+        var y = 399;
+        var suelo = {x: x, y: y};
+        this.RectaSuelo = new Recta (suelo, this.point());
+    }
+
+    drawVision(ctx, color = "red"){
+        this.RectaSuelo.draw(ctx, color);
+        this.RectaTecho.draw(ctx, color);
+    }
+
+    calcularScreenTop(dis = 50){
+        var x = this.x + dis;
+        var y = this.RectaTecho.m * x + this.RectaTecho.b;
+        return {x: x, y: y};
+    }
+
+    calcularScreenBot(dis = 50){
+        var x = this.x + dis;
+        var y = this.RectaSuelo.m * x + this.RectaSuelo.b;
+        return {x: x, y: y};
     }
 }
 
@@ -48,30 +94,14 @@ function DrawView2d(view2d) {
     //dibujar jugador
     drawLine(ctx, Vista.point(), new Point(5, 399));
     //dibujar cono de vision
-    drawVision(ctx, Vista.point());
-
-}
-
-function drawVision(ctx){
-    //calcular puntos de colision de la vista con el techo y el suelo
-    puntos = calcularCono();
-    drawLine(ctx, Vista.point(), puntos.techo, "red");
-    drawLine(ctx, Vista.point(), puntos.suelo, "red");
-}
-
-function calcularCono() {
-    tan = getTanFromDegrees(Vista.angulo/2);
-    //punto techo
-    x = Vista.x + (Vista.y/tan);
-    y = 0;
-    puntoTecho = {x: x, y: y};
-    //punto suelo
-    x = Vista.x + (175/tan);
-    y = 399;
-    puntoSuelo = {x: x, y: y};
-
-    puntos = {techo: puntoTecho, suelo: puntoSuelo};
-    return puntos;
+    Vista.drawVision(ctx);
+    //crear y dibujar esquina
+    Esquina1 = new Esquina(500,399,500,200);
+    drawLine(ctx, Esquina1.inicio, Esquina1.final);
+    RectaJugadorEsquinaSuelo = new Recta (Esquina1.inicio);
+    RectaJugadorEsquinaSuelo.draw(ctx);
+    console.log(Vista.Screen);
+    Vista.Screen.draw(ctx, "green");
 }
 
 function getTanFromDegrees(degrees) {
@@ -116,4 +146,17 @@ function on_mouse_moved(position)
 {
 	vista.x = position.x;
 	vista.y = position.y;
+}
+
+function calcularPendienteRecta(puntoA, puntoB){
+    //m = ( y2 - y1 )/( x2 - x1 )
+    res = puntoB.y-puntoA.y;
+    res /= puntoB.x-puntoA.x;
+    return res;
+}
+
+function calcularComponenteRecta(puntoA, m){
+    //b = -x1 * m + y1
+    res = -puntoA.x * m + puntoA.y;
+    return res;
 }
