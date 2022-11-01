@@ -9,6 +9,10 @@ function on_load()
     DrawView2d(view2d);
 }
 
+
+
+
+
 class Point {
     constructor(x, y){
         this.x = x;
@@ -94,7 +98,22 @@ class VistaJugador {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 var Vista = new VistaJugador(5,225, 50);
+
+
+
 
 function DrawView2d(view2d) {
 
@@ -137,27 +156,6 @@ function drawLine(ctx, begin, end, stroke = 'black', width = 1) {
     ctx.stroke();
 }
 
-function key_pressed()
-{
-
-}
-
-function mouse_position()
-{
-	event = window.event;
-
-	mouse_position = {"x":e.clientX, "y":e.clientY};
-
-	on_mouse_moved(mouse_position)
-
-	var t = setTimeout(mouse_position,100);
-}
-
-function on_mouse_moved(position)
-{
-	vista.x = position.x;
-	vista.y = position.y;
-}
 
 function calcularPendienteRecta(puntoA, puntoB){
     //m = ( y2 - y1 )/( x2 - x1 )
@@ -170,4 +168,43 @@ function calcularComponenteRecta(puntoA, m){
     //b = -x1 * m + y1
     res = -puntoA.x * m + puntoA.y;
     return res;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function key_pressed()
+{
+
+}
+
+function mouse_position()
+{
+    event = window.event;
+
+    mouse_position = {"x":e.clientX, "y":e.clientY};
+
+    on_mouse_moved(mouse_position)
+
+    var t = setTimeout(mouse_position,100);
+}
+
+function on_mouse_moved(position)
+{
+    vista.x = position.x;
+    vista.y = position.y;
 }
