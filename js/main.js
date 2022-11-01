@@ -21,8 +21,17 @@ class Recta {
 
 class Esquina {
     constructor(xi, yi, xf, yf){
-        this.inicio = {x: xi, y: yi};
-        this.final = {x: xf, y: yf};
+        this.inicio = new Point(xi, yi);
+        this.final = new Point(xf, yf);
+    }
+}
+
+class Wall {
+    constructor(EsquinaA, EsquinaB, puntoA, puntoB){
+        this.EsquinaA = EsquinaA;
+        this.EsquinaB = EsquinaB;
+        this.puntoA = puntoA;
+        this.puntoB = puntoB;
     }
 }
 
@@ -40,7 +49,7 @@ class Screen {
     calcularInterseccion(Recta){
         var x = this.ScreenBot.x;
         var y = Recta.m * x + Recta.b;
-        return {x: x, y: y};
+        return new Point(x, y);
     }
 }
 
@@ -82,12 +91,12 @@ class VistaJugador {
         //punto techo
         var x = this.x + (this.y/tan);
         var y = 0;
-        var techo = {x: x, y: y};
+        var techo = new Point(x, y);
         this.RectaTecho = new Recta (techo, this.point());
         //punto suelo
         var x = this.x + (175/tan);
         var y = 399;
-        var suelo = {x: x, y: y};
+        var suelo = new Point(x, y);
         this.RectaSuelo = new Recta (suelo, this.point());
     }
 
@@ -99,13 +108,13 @@ class VistaJugador {
     calcularScreenTop(dis = 50){
         var x = this.x + dis;
         var y = this.RectaTecho.m * x + this.RectaTecho.b;
-        return {x: x, y: y};
+        return new Point(x, y);
     }
 
     calcularScreenBot(dis = 50){
         var x = this.x + dis;
         var y = this.RectaSuelo.m * x + this.RectaSuelo.b;
-        return {x: x, y: y};
+        return new Point(x, y);
     }
 }
 
@@ -126,7 +135,7 @@ function DrawView2d(view2d, view3d) {
     ctx = view2d.getContext("2d");
     
     //dibujar fondo
-    drawRect(ctx, 0, 0, view2d.width, view2d.height, "white")
+    drawRect(ctx, 0, 0, view2d.width, view2d.height, "white");
     //dibujar jugador
     drawLine(ctx, Vista.point(), new Point(5, 399));
     //dibujar cono de vision
@@ -147,9 +156,29 @@ function DrawView2d(view2d, view3d) {
     PuntoScreenEsquina1Suelo = Vista.Screen.calcularInterseccion(RectaJugadorEsquinaSuelo);
     PuntoScreenEsquina1Techo = Vista.Screen.calcularInterseccion(RectaJugadorEsquinaTecho);
 
+    Esquina2 = new Esquina(500,399,500,200);
+    Pared = new Wall(Esquina1, Esquina2, new Point(400,100), new Point(400,500))
+
+    DrawViewAerea(Pared);
+
     //dibujamos vista "3d"
     DrawView3d(view3d, PuntoScreenEsquina1Suelo, PuntoScreenEsquina1Techo);
 
+}
+
+function DrawViewAerea(Pared){
+    console.log("hola")
+
+    viewAerea = document.getElementById('ViewAerea');
+    ctx = viewAerea.getContext("2d");
+
+    //dibujar fondo
+    drawRect(ctx, 0, 0, viewAerea.width, viewAerea.height, "white");
+
+    //dibujar jugador
+    drawRect(ctx, 100, 300, 1, 1, "black");
+
+    
 }
 
 function DrawView3d(view3d, puntoA, puntoB){
