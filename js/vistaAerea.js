@@ -5,6 +5,8 @@ function onloadVistaAerea(){
     puntoA = new Point(450, 120);
     puntoB = new Point(450, 240);
     Pared = new Wall(puntoA, puntoB);
-    Pared.drawViewAerea();
+    Jugador = new Player(new Point(5,5));
+    Pared.draw();
+    Jugador.draw();
 }
 
