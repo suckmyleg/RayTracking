@@ -31,7 +31,7 @@ class Wall {
 }
 
 class Vision{
-    constructor(punto, angulo = 10, speed = 1){
+    constructor(punto, angulo = 90, speed = 1){
         this.Pos = punto;
         this.angulo = angulo;
         this.angulos=calcularAngulosEsquinasMapa(this.Pos);
@@ -53,36 +53,45 @@ class Vision{
 
     drawVisionAerea(){
         this.calcularPuntoPared();
-        console.log(this.Pos, this.PuntoPared)
         drawLine(viewAerea, this.Pos, this.PuntoPared)
     }
 
     calcularPuntoPared(){
         var rel;
-        if(this.pared == 1){
+        if(this.pared == 0){
+            rel = this.Pos.y;
+            var ang = 90-(360-this.angulo);
+            rel /= CosAng(ang);
+            var x = SenAng(ang)*rel+this.Pos.x;
+            this.PuntoPared = new Point(x,0);
+        }else if(this.pared == 1){
             rel = viewAerea.width-1-this.Pos.x;
             rel /= CosAng(this.angulo);
             var x = SenAng(this.angulo)*rel+this.Pos.y;
             this.PuntoPared = new Point(viewAerea.width-1 ,x);
-            console.log(this.PuntoPared)
         }else if(this.pared == 2){
             rel = viewAerea.height-1-this.Pos.y;
             rel /= SenAng(this.angulo);
             var x = CosAng(this.angulo)*rel+this.Pos.x;
             this.PuntoPared = new Point(x ,viewAerea.height-1);
+        }else if(this.pared == 3){
+            rel = this.Pos.x;
+            var ang = 180-this.angulo;
+            rel /= CosAng(ang);
+            var x = SenAng(ang)*rel+this.Pos.y;
+            this.PuntoPared = new Point(0,x);
         }
     }
 
     calcularPared(){
         this.angulo
-        this.pared = 3
-        console.log(this.angulo)
+        this.pared = 3;
         for(var i=0; i<EsquinasMapa.length-1; i++){
-            console.log(i,this.angulos[i],this.angulos[i+1])
-            if(this.angulo>this.angulos[i]&&this.angulo<this.angulos[i+1])
+            var a = this.angulos[i];
+            var b = this.angulos[i+1];
+            if(AngEntreAngs(a, b, this.angulo))
                 this.pared = i;
         }
-        console.log(this.pared)
     }
 
     update(Pos){

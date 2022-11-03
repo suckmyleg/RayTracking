@@ -1,6 +1,9 @@
 function drawLine(view, begin, end, stroke = 'black', width = 1){
     beginCanvas = convertirPuntoCanvas(view, begin);
     endCanvas = convertirPuntoCanvas(view, end);
+    //if(end.y == 0)
+        //console.log(endCanvas)
+
     ctx = view.getContext('2d');
     if (stroke)
         ctx.strokeStyle = stroke;
@@ -96,4 +99,23 @@ function SenAng(angulo){
 
 function CosAng(angulo){
     return Math.cos(AngToRad(angulo));
+}
+
+function diferenciaAng(a,b){
+    dif=a-b;
+    dif = Math.abs(dif);
+    if(dif>180){
+        if(a<b)
+            dif = diferenciaAng(a+360,b);
+        else
+            dif = diferenciaAng(a,b+360);
+    }
+    return dif;
+}
+
+function AngEntreAngs(a,b,c){
+    difTotal = diferenciaAng(a,b);
+    sumaDifs = diferenciaAng(a,c)+diferenciaAng(b,c);
+
+    return Math.abs(difTotal-sumaDifs)<0.000001; //tener encuenta que hay error al sumar y restar
 }
