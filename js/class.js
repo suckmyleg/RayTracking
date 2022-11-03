@@ -31,14 +31,14 @@ class Wall {
 }
 
 class Vision{
-    constructor(punto, angulo = 80){
+    constructor(punto, angulo = 80, speed = 1){
         this.Pos = punto;
         this.angulo = angulo;
         this.angulos=calcularAngulosEsquinasMapa(this.Pos);
         this.calcularPared();
         this.calcularPuntoPared();
-        this.dangulo=0;
-        console.log(this.PuntoPared)
+        this.dangulo = 0;
+        this.speed = speed;
     }
 
     draw(){
@@ -77,7 +77,19 @@ class Vision{
 
     update(Pos){
         this.Pos = Pos;
+        this.calcularVelocidad();
+        this.actualizarAngulo();
         this.draw();
+    }
+
+    calcularVelocidad(){
+        var dLeft = (Controles.arrowLeft)?this.speed:0;
+        var dRight = (Controles.arrowRight)?this.speed:0; 
+        this.dangulo = dLeft-dRight;
+    }
+
+    actualizarAngulo(){
+        this.angulo += this.dangulo;
     }
 }
 

@@ -2,7 +2,9 @@ Controles = {
     up: false,
     down: false,
     left: false,
-    right: false
+    right: false,
+    arrowLeft: false,
+    arrowRight: false
 }
 
 document.addEventListener("keydown", function(event){
@@ -15,6 +17,10 @@ document.addEventListener("keydown", function(event){
         Controles.down = true;
     }else if (event.key === "d") {
         Controles.right = true;
+    }else if (event.key === "ArrowLeft") {
+        Controles.arrowLeft = true;
+    }else if (event.key === "ArrowRight") {
+        Controles.arrowRight = true;
     }
 
 });
@@ -29,6 +35,10 @@ document.addEventListener("keyup", function(event){
         Controles.down = false;
     }else if (event.key === "d") {
         Controles.right = false;
+    }else if (event.key === "ArrowLeft") {
+        Controles.arrowLeft = false;
+    }else if (event.key === "ArrowRight") {
+        Controles.arrowRight = false;
     }
 
 });
