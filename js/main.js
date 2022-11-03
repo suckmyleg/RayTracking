@@ -4,8 +4,8 @@ function onload(){
     puntoB = new Point(450, 240);
     Pared = new Wall(puntoA, puntoB);
     Jugador = new Player(new Point(300,300));
-    start();
-    //update();
+    //start();
+    update();
 }
 
 function cargarVariables(){
