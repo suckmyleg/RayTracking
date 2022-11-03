@@ -1,5 +1,7 @@
 var viewAerea;
 var ctxAerea;
+var Pared;
+var Jugador;
 
 class Point {
     constructor(x, y){
@@ -20,53 +22,82 @@ class Wall {
     }
 
     drawViewAerea(color = 'red', width = 1) {
-        drawLine(viewAerea, convertirPuntoCanvas(viewAerea,this.PuntoA), convertirPuntoCanvas(viewAerea,this.PuntoB), color, width);
+        drawLine(viewAerea, this.PuntoA, this.PuntoB, color, width);
+    }
+
+    update(){
+        this.draw()
     }
 }
 
 class Player{
-    constructor(punto, w=10, h=10){
+    constructor(punto, r=5, speed = 5){
         this.Pos = punto;
         this.dx = 0;
         this.dy = 0;
-        this.width = w;
-        this.height = h;
+        this.r = r;
+        this.speed = speed;
     }
 
     draw(){
         this.drawViewAerea();
     }
 
-    drawViewAerea(color = 'brown') {
-        drawRect(viewAerea, this.Pos.x-this.width/2, this.Pos.y+this.height/2, this.width, this.height, color);
+    drawViewAerea(color = 'black') {
+        drawCircle(viewAerea, this.Pos, this.r, color);
+    }
+
+    update(){
+        this.calcularVelocidad();
+        this.actualizarPos();
+        this.draw()
+    }
+
+    calcularVelocidad(){
+
+        var dUp = (Controles.up)?this.speed:0;
+        var dLeft = (Controles.left)?this.speed:0;
+        var dDown = (Controles.down)?this.speed:0;
+        var dRight = (Controles.right)?this.speed:0; 
+        this.dy = dUp-dDown;
+        this.dx = dRight-dLeft;
+    }
+
+    actualizarPos(){
+        this.Pos.x+=this.dx;
+        this.Pos.y+=this.dy;
     }
 
 }
 
-function drawLine(view, begin, end, stroke = 'black', width = 1) {
+function drawLine(view, begin, end, stroke = 'black', width = 1){
+    beginCanvas = convertirPuntoCanvas(view, begin);
+    endCanvas = convertirPuntoCanvas(view, end);
     ctx = view.getContext('2d');
     if (stroke)
         ctx.strokeStyle = stroke;
     if (width)
         ctx.lineWidth = width;
     ctx.beginPath();
-    ctx.moveTo(begin.x+0.5, begin.y+0.5);
-    ctx.lineTo(end.x+0.5, end.y+0.5);
+    ctx.moveTo(beginCanvas.x+0.5, beginCanvas.y+0.5);
+    ctx.lineTo(endCanvas.x+0.5, endCanvas.y+0.5);
     ctx.stroke();
 }
 
 function dibujarFondo(view){
-    drawRect(view, 0, view.height-1, view.width-1, view.height-1, "white");
+    drawRect(view, new Point(0, view.height-1), view.width-1, view.height-1, "white");
 }
 
-function drawRect(view, x, y, w, h, color){
+function drawRect(view, punto, w, h, color){
+    puntoCanvas = convertirPuntoCanvas(view, punto);
     ctx = view.getContext('2d');
+    ctx.beginPath();
     ctx.fillStyle = color;
-    ctx.fillRect(x, view.height-1-y, w, h);
+    ctx.fillRect(puntoCanvas.x, puntoCanvas.y, w, h);
 }
 
-function convertirPuntoCanvas(view ,puntoA){
-    res = puntoA
+function convertirPuntoCanvas(view ,punto){
+    res = new Point(punto.x, punto.y)
     res.y = view.height-res.y;
     return res;
 }
@@ -79,9 +110,40 @@ function calcularDistanciaPuntos(PuntoA, PuntoB){
     return dis;
 }
 
+function limpiarCanvas(view) {
+    ctx.clearRect(0, 0, view.width, view.height);
+    dibujarFondo(view);
+}
+
+function drawCircle(view, punto, r, color){
+    puntoCanvas = convertirPuntoCanvas(view, punto);
+    ctx = view.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(puntoCanvas.x, puntoCanvas.y, r, 0, 2 * Math.PI);
+    ctx.fillStyle = color;
+    ctx.fill();
+}
+
+
 
 
 
 function cargarVariables(){
     viewAerea = document.getElementById('ViewAerea');
 }
+
+function update(){  
+    limpiarCanvas(viewAerea);
+    updateAll();
+}
+
+function updateAll(){
+    Jugador.update()
+    Pared.update()
+}
+
+// number of frames per second
+let framePerSecond = 50;
+
+//call the game function 50 times every 1 Sec
+let loop = setInterval(update,1000/framePerSecond);
