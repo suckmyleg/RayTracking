@@ -31,7 +31,7 @@ class Wall {
 }
 
 class Vision{
-    constructor(punto, angulo = 80, speed = 1){
+    constructor(punto, angulo = 90, speed = 1){
         this.Pos = punto;
         this.angulo = angulo;
         this.angulos=calcularAngulosEsquinasMapa(this.Pos);
@@ -90,6 +90,10 @@ class Vision{
 
     actualizarAngulo(){
         this.angulo += this.dangulo;
+        if(this.angulo<0)
+            this.angulo += 360;
+        if(this.angulo>360)
+            this.angulo -= 360;
     }
 }
 
