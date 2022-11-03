@@ -31,7 +31,7 @@ class Wall {
 }
 
 class Player{
-    constructor(punto, r=5, speed = 5){
+    constructor(punto, r=5, speed = 1.5){
         this.Pos = punto;
         this.dx = 0;
         this.dy = 0;
@@ -61,6 +61,16 @@ class Player{
         var dRight = (Controles.right)?this.speed:0; 
         this.dy = dUp-dDown;
         this.dx = dRight-dLeft;
+        var vel = calcularDistanciaPuntos(new Point(0,0), new Point(this.dx, this.dy));
+        if(vel>5)
+            this.ajustarVelocidad();
+    }
+
+    ajustarVelocidad(){
+        var vel = calcularDistanciaPuntos(new Point(0,0), new Point(this.dx, this.dy));
+        var rel = this.speed/vel;
+        this.dx *= rel;
+        this.dy *= rel;
     }
 
     actualizarPos(){
