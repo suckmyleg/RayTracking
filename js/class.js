@@ -1,7 +1,7 @@
 var viewAerea;
-var ctxAerea;
 var Pared;
 var Jugador;
+var EsquinasMapa;
 
 class Point {
     constructor(x, y){
@@ -30,6 +30,57 @@ class Wall {
     }
 }
 
+class Vision{
+    constructor(punto, angulo = 80){
+        this.Pos = punto;
+        this.angulo = angulo;
+        this.angulos=calcularAngulosEsquinasMapa(this.Pos);
+        this.calcularPared();
+        this.calcularPuntoPared();
+        this.dangulo=0;
+        console.log(this.PuntoPared)
+    }
+
+    draw(){
+        this.drawViewAerea();
+    }
+
+    drawViewAerea(){
+        this.angulos = calcularAngulosEsquinasMapa(this.Pos);
+        this.calcularPared();
+        this.drawVisionAerea();
+    }
+
+    drawVisionAerea(){
+        this.calcularPuntoPared();
+        drawLine(viewAerea, this.Pos, this.PuntoPared)
+    }
+
+    calcularPuntoPared(){
+        var rel;
+        if(this.pared == 2){
+            rel = viewAerea.height-1-this.Pos.y;
+            rel /= SenAng(this.angulo);
+            var x = CosAng(this.angulo)*rel+this.Pos.x;
+            this.PuntoPared = new Point(x ,viewAerea.height-1);
+        }
+    }
+
+    calcularPared(){
+        this.angulo
+        this.pared = 3
+        for(var i=0; i<EsquinasMapa.length-1; i++){
+            if(this.angulo>this.angulos[i]&&this.angulo<this.angulos[i+1])
+                this.pared = i;
+        }
+    }
+
+    update(Pos){
+        this.Pos = Pos;
+        this.draw();
+    }
+}
+
 class Player{
     constructor(punto, r=5, speed = 1.5){
         this.Pos = punto;
@@ -37,6 +88,7 @@ class Player{
         this.dy = 0;
         this.r = r;
         this.speed = speed;
+        this.Vista = new Vision(this.Pos);
     }
 
     draw(){
@@ -50,7 +102,8 @@ class Player{
     update(){
         this.calcularVelocidad();
         this.actualizarPos();
-        this.draw()
+        this.draw();
+        this.Vista.update(this.Pos);
     }
 
     calcularVelocidad(){

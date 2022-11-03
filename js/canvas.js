@@ -12,10 +12,6 @@ function drawLine(view, begin, end, stroke = 'black', width = 1){
     ctx.stroke();
 }
 
-function dibujarFondo(view){
-    drawRect(view, new Point(0, view.height-1), view.width-1, view.height-1, "white");
-}
-
 function drawRect(view, punto, w, h, color){
     puntoCanvas = convertirPuntoCanvas(view, punto);
     ctx = view.getContext('2d');
@@ -23,6 +19,27 @@ function drawRect(view, punto, w, h, color){
     ctx.fillStyle = color;
     ctx.fillRect(puntoCanvas.x, puntoCanvas.y, w, h);
 }
+
+function drawCircle(view, punto, r, color){
+    puntoCanvas = convertirPuntoCanvas(view, punto);
+    ctx = view.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(puntoCanvas.x, puntoCanvas.y, r, 0, 2 * Math.PI);
+    ctx.fillStyle = color;
+    ctx.fill();
+}
+
+function dibujarFondo(view){
+    drawRect(view, new Point(0, view.height-1), view.width-1, view.height-1, "white");
+}
+
+function limpiarCanvas(view) {
+    ctx = view.getContext('2d');
+    ctx.clearRect(0, 0, view.width, view.height);
+    dibujarFondo(view);
+}
+
+/*__________CALCULOS___________*/
 
 function convertirPuntoCanvas(view ,punto){
     res = new Point(punto.x, punto.y)
@@ -38,17 +55,45 @@ function calcularDistanciaPuntos(PuntoA, PuntoB){
     return dis;
 }
 
-function limpiarCanvas(view) {
-    ctx = view.getContext('2d');
-    ctx.clearRect(0, 0, view.width, view.height);
-    dibujarFondo(view);
+function calcularAnguloPuntos(puntoA, puntoB){
+    adyacente = puntoB.x-puntoA.x;
+    if(adyacente == 0){
+        angulo =(opuesto>0)?90:270;
+    }else{
+    opuesto = puntoB.y-puntoA.y;
+    tan = opuesto/adyacente;
+    //console.log("tan", tan)
+    angulo = Math.atan(tan);
+    angulo = RadToAng(angulo);
+    if(opuesto<0 && adyacente<0 || opuesto>0 && adyacente<0)
+        angulo +=180;
+    if(angulo < 0)
+        angulo +=360
+    }    
+    return angulo;
 }
 
-function drawCircle(view, punto, r, color){
-    puntoCanvas = convertirPuntoCanvas(view, punto);
-    ctx = view.getContext("2d");
-    ctx.beginPath();
-    ctx.arc(puntoCanvas.x, puntoCanvas.y, r, 0, 2 * Math.PI);
-    ctx.fillStyle = color;
-    ctx.fill();
+function RadToAng(angulo){
+    return (angulo * 180)/Math.PI;
+}
+
+function AngToRad(angulo){
+    return (angulo * Math.PI)/180;
+}
+
+function calcularAngulosEsquinasMapa(punto){
+    angulos = [];
+    for(i=0; i<EsquinasMapa.length;i++){
+        ang = calcularAnguloPuntos(punto, EsquinasMapa[i]);
+        angulos.push(ang);
+    }
+    return angulos;
+}
+
+function SenAng(angulo){
+    return Math.sin(AngToRad(angulo));
+}
+
+function CosAng(angulo){
+    return Math.cos(AngToRad(angulo));
 }
