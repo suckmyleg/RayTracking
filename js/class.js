@@ -99,6 +99,7 @@ class Vision{
         this.calcularVelocidad();
         this.actualizarAngulo();
         this.draw();
+        //console.log(this.angulo, calcularAnguloPuntos(this.Pos,this.PuntoPared));
     }
 
     calcularVelocidad(){
@@ -143,22 +144,15 @@ class Player{
 
     calcularVelocidad(){
 
-        var dUp = (Controles.up)?this.speed:0;
-        var dLeft = (Controles.left)?this.speed:0;
-        var dDown = (Controles.down)?this.speed:0;
-        var dRight = (Controles.right)?this.speed:0; 
+        var dUp = (Controles.up)?1:0;
+        var dLeft = (Controles.left)?1:0;
+        var dDown = (Controles.down)?1:0;
+        var dRight = (Controles.right)?1:0; 
         this.dy = dUp-dDown;
         this.dx = dRight-dLeft;
+        this.anguloMov = calcularAnguloPuntos(new Point(0,0),new Point(this.dx,this.dy));
         var vel = calcularDistanciaPuntos(new Point(0,0), new Point(this.dx, this.dy));
-        if(vel>5)
-            this.ajustarVelocidad();
-    }
-
-    ajustarVelocidad(){
-        var vel = calcularDistanciaPuntos(new Point(0,0), new Point(this.dx, this.dy));
-        var rel = this.speed/vel;
-        this.dx *= rel;
-        this.dy *= rel;
+        console.log(this.anguloMov)
     }
 
     actualizarPos(){

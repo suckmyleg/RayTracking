@@ -60,18 +60,21 @@ function calcularDistanciaPuntos(PuntoA, PuntoB){
 
 function calcularAnguloPuntos(puntoA, puntoB){
     adyacente = puntoB.x-puntoA.x;
+    opuesto = puntoB.y-puntoA.y;
     if(adyacente == 0){
         angulo =(opuesto>0)?90:270;
+        if(opuesto<0.000001 && opuesto>-0.000001)
+            angulo = null;
+    }else if(opuesto == 0){
+        angulo = (adyacente < 0)?180:0;
     }else{
-    opuesto = puntoB.y-puntoA.y;
-    tan = opuesto/adyacente;
-    //console.log("tan", tan)
-    angulo = Math.atan(tan);
-    angulo = RadToAng(angulo);
-    if(opuesto<0 && adyacente<0 || opuesto>0 && adyacente<0)
-        angulo +=180;
-    if(angulo < 0)
-        angulo +=360
+        tan = opuesto/adyacente;
+        angulo = Math.atan(tan);
+        angulo = RadToAng(angulo);
+        if(opuesto<0 && adyacente<0 || opuesto>0 && adyacente<0)
+            angulo +=180;
+        if(angulo < 0)
+            angulo +=360
     }    
     return angulo;
 }
@@ -118,4 +121,8 @@ function AngEntreAngs(a,b,c){
     sumaDifs = diferenciaAng(a,c)+diferenciaAng(b,c);
 
     return Math.abs(difTotal-sumaDifs)<0.000001; //tener encuenta que hay error al sumar y restar
+}
+
+function sumarPuntos(A, B){
+    return new Point(A.x+B.x,A.y+B.y);
 }
