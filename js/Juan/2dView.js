@@ -1,11 +1,11 @@
 function get_parts_cubo(p, s){
 	parts = []
 	
-	parts.push(new Line({x: p.x, y: p.y}, {x: p.x+s.w, y: p.y}));
-	parts.push(new Line({x: p.x+s.w, y: p.y}, {x: p.x+s.w, y: p.y+s.h}));
+	parts.push(new Recta({x: p.x, y: p.y}, {x: p.x+s.x, y: p.y}));
+	parts.push(new Recta({x: p.x+s.x, y: p.y}, {x: p.x+s.x, y: p.y+s.h}));
 
-	parts.push(new Line({x: p.x, y: p.y+s.h}, {x: p.x+s.w, y: p.y+s.h}));
-	parts.push(new Line({x: p.x, y: p.y}, {x: p.x, y: p.y+s.h}));
+	parts.push(new Recta({x: p.x, y: p.y+s.h}, {x: p.x+s.x, y: p.y+s.h}));
+	parts.push(new Recta({x: p.x, y: p.y}, {x: p.x, y: p.y+s.h}));
 
 	return parts
 }
@@ -23,10 +23,12 @@ class Point{
 	}
 }
 
-class Line{
+class Recta{
 	constructor(a, b){
 		this.a = a;
 		this.b = b;
+		this.xv = b.x - a.x;
+		this.yv = b.y - a.y;
 	}
 
 	get(){
@@ -36,7 +38,7 @@ class Line{
 
 class Part{
 	constructor(a, b){
-		this.line = new Line(a, b);
+		this.line = new Recta(a, b);
 	}
 
 	get_line(){
@@ -65,7 +67,20 @@ class FisicObject{
 	}
 
 	move_to(position){
+	    var moved = new Point(position.x - this.position.x, position.y - this.position.y);
 		this.position = position;
+		for(var i in this.parts){
+            var part = this.parts[i];
+
+		    //console.log(moved);
+		    part.a.x += moved.x;
+		    part.a.y += moved.y;
+
+		    part.b.x += moved.x;
+		    part.b.y += moved.y;
+
+		    //console.log("end", part.a);
+		}
 	}
 
 	get_size(){
@@ -78,26 +93,26 @@ class FisicObject{
 
 class Cubo{
 	constructor(position, size){
-		parts = get_parts_cubo(position, size);
+		parts = get_parts_cubo(new Point(position.x, position.y), size);
 
-		this.fisicObject = new FisicObject(position, size, parts);
+		this.object = new FisicObject(position, size, parts);
 	}
 
 	get_object(){
-		return this.fisicObject;
+		return this.object;
 	}
 }
 
 class Wall{
 	constructor(position, size){
-		this.fisicObject = new FisicObject(position, [
-			new Line({x: position.x, y: position.y}, 
+		this.object = new FisicObject(position, [
+			new Recta({x: position.x, y: position.y},
 				{x: position.x+size.w, y: position.y+size.h})])
 
 	}
 
 	get_object(){
-		return this.fisicObject;
+		return this.object;
 	}
 }
 
@@ -115,7 +130,7 @@ class Entity{
 			this.entity = new Cubo(position, size);
 		}
 
-		this.vision = new Vision(position);
+		this.vision = new Vision(new Point(position.x, position.y));
 		this.color = color;
 	}
 
@@ -186,13 +201,23 @@ class Player{
 
 
 class Vision{
+    setup_recta(){
+		this.recta = new Recta(this.object.position, this.looking_to);
+    }
+
 	constructor(position, angle, pov=90){
 		this.pov = pov;
-		this.angle = angle;
-
-		this.object = new FisicObject(position,new Point(0,0), [
-		new Line(position, new Point(position.get().x + 10, position.get().y+10))]);
+		this.looking_to = new Point(0, 0);
+        this.object = new FisicObject(position,new Point(0,0), [
+            new Recta(new Point(position.x, position.y), new Point(position.x + 10, position.y)),
+            new Recta(new Point(position.x, position.y), new Point(position.x, position.y+10))]);
+		this.setup_recta();
 	}
+
+    look_to(position){
+        this.looking_to = position;
+        this.setup_recta();
+    }
 
 	move_to(position){
 		this.object.move_to(position);
@@ -238,9 +263,25 @@ class Screen{
 		this.objects = [];
 	}
 
+    draw_object(object){
+        for(var rect of object.parts){
+            this.drawRecta(rect);
+        }
+    }
+
 	drawEntity(entity){
 		this.drawRect(entity.get_position().get(), entity.get_size().get(), entity.get_color());
+		this.draw_object(entity.entity.object);
 	}
+
+    drawRecta(recta){
+        //console.log(recta);
+        this.ctx.beginPath();
+        this.ctx.moveTo(recta.a.x+0.5, recta.a.y+0.5);
+        this.ctx.lineTo(recta.b.x+0.5, recta.b.y+0.5);
+        this.ctx.stroke();
+        this.objects.push(recta);
+    }
 
 	drawLine(begin, end, stroke = 'black', width = 1){
 		if (stroke)
@@ -253,7 +294,7 @@ class Screen{
 		this.ctx.moveTo(begin[0]+0.5, begin[1]+0.5);
 		this.ctx.lineTo(end[0]+0.5, end[1]+0.5);
 		this.ctx.stroke();
-		this.objects.push(new Line(begin, end));
+		this.objects.push(new Recta(begin, end));
 	}
 
 	empty(){
@@ -268,11 +309,11 @@ class Screen{
 
 	drawRectWithoutPoint(x, y, w, h, color){
 		//console.log("Drawing", x, y, w, h, color);
-		this.objects.push(new Line({x: x, y: y}, {x: x+w, y: y}));
-		this.objects.push(new Line({x: x+w, y: y}, {x: x+w, y: y+h}));
+		this.objects.push(new Recta({x: x, y: y}, {x: x+w, y: y}));
+		this.objects.push(new Recta({x: x+w, y: y}, {x: x+w, y: y+h}));
 
-		this.objects.push(new Line({x: x, y: y+h}, {x: x+w, y: y+h}));
-		this.objects.push(new Line({x: x, y: y}, {x: x, y: y+h}));
+		this.objects.push(new Recta({x: x, y: y+h}, {x: x+w, y: y+h}));
+		this.objects.push(new Recta({x: x, y: y}, {x: x, y: y+h}));
 
    		this.ctx.fillStyle = color;
     	this.ctx.fillRect(x, y, w, h);
@@ -281,6 +322,7 @@ class Screen{
 	draw_vision(vision)
 	{
 		this.drawRect(vision.get_position(), new Point(10, 10), "pink");
+		this.draw_object(vision.object);
 	}
 }
 
